@@ -1,12 +1,17 @@
 # Liberty on Java8
 
-FROM golang:1.5.0
+FROM vertigo/golang
 
 MAINTAINER Andre Fernandes <andre@vertigo.com.br>
 
-RUN cd /go/src && \
-	git clone git://github.com/elasticsearch/logstash-forwarder.git && \
-	cd logstash-forwarder && \
-	go build -o /go/bin/logstash-forwarder
+RUN mkdir -p /go/src/github.com/elasticsearch/logstash-forwarder && \
+    git clone https://github.com/elastic/logstash-forwarder.git /go/src/github.com/elasticsearch/logstash-forwarder && \
+    export CGO_ENABLED="0" && \
+    echo "building..." && \
+    go env && \
+    go install github.com/elasticsearch/logstash-forwarder
+#    go install --ldflags '-extldflags "-static"' github.com/elasticsearch/logstash-forwarder
+
+#USER developer
 
 CMD ["cat","/go/bin/logstash-forwarder"]
